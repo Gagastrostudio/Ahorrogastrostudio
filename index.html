@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Fondos y Ahorros | Greisi Morón</title>
+    <!-- Tailwind CSS v4 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome para Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        @keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        .animate-pulse-slow { animation: pulse-slow 3s infinite; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER / SPLASH BANNER -->
+    <header class="bg-gradient-to-r from-purple-950 via-purple-900 to-slate-900 border-b border-amber-500/30 p-6 shadow-xl text-center">
+        <div class="max-w-4xl mx-auto flex flex-col items-center">
+            <div class="w-16 h-16 bg-amber-500/20 border-2 border-amber-400 rounded-full flex items-center justify-center mb-3 shadow-lg shadow-amber-500/10">
+                <i class="fa-solid fa-vault text-amber-400 text-2xl"></i>
+            </div>
+            <h1 class="text-2xl md:text-3xl font-bold tracking-wider text-white">SISTEMA DE GESTIÓN DE FONDOS</h1>
+            <p class="text-amber-300 text-sm mt-1 font-medium tracking-wide">GESTIÓN INTELIGENTE • GREISI MORÓN</p>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-4xl w-full mx-auto p-4 md:p-6 flex-grow">
+
+        <!-- CONFIG BAR -->
+        <div class="bg-purple-900/40 border border-purple-700/50 rounded-2xl p-4 mb-6 shadow-lg flex flex-col sm:flex-row justify-between items-center gap-4 backdrop-blur-md">
+            <div class="flex items-center gap-3">
+                <div class="p-3 bg-amber-500/20 text-amber-400 rounded-xl">
+                    <i class="fa-solid fa-coins text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-purple-300 uppercase tracking-wider font-semibold">Plataforma Activa</p>
+                    <p class="text-sm font-bold text-white">Seguridad y Control Multigrupo</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+                <button onclick="switchView('client')" id="btnViewClient" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl font-medium text-sm bg-amber-500 text-slate-950 shadow-md hover:bg-amber-400 transition">
+                    <i class="fa-solid fa-user mr-2"></i> Vista Cliente
+                </button>
+                <button onclick="openAdminLogin()" id="btnViewAdmin" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl font-medium text-sm bg-purple-800 text-purple-200 border border-purple-600 hover:bg-purple-700 transition">
+                    <i class="fa-solid fa-lock mr-2"></i> Admin PIN
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= VISTA CLIENTE ================= -->
+        <div id="clientView" class="space-y-6">
+            <!-- BANNER MORADO DE GANADOR (Dura 4 días) -->
+            <div id="clientWinnerBanner" class="hidden bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-950 border-2 border-amber-400 rounded-3xl p-6 shadow-2xl text-center space-y-3 relative overflow-hidden animate-pulse-slow">
+                <div class="absolute -right-10 -top-10 text-amber-400/10 text-9xl">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <span class="inline-block px-4 py-1 rounded-full text-xs font-black uppercase bg-amber-400 text-slate-950 tracking-wider shadow-md">
+                    🎉 ¡GRAN SORTEO OFICIAL! 🎉
+                </span>
+                <h3 id="winnerBannerTitle" class="text-lg md:text-xl font-extrabold text-white">GANADOR DEL GRUPO</h3>
+                <p id="winnerBannerName" class="text-2xl md:text-4xl font-black text-amber-300 tracking-wide uppercase drop-shadow-md">---</p>
+                <p class="text-sm text-purple-200 font-semibold">¡FELICIDADES POR TU FONDO ADJUDICADO! 🚀💰</p>
+            </div>
+
+            <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-2xl backdrop-blur-md">
+                <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass text-amber-400"></i> Consulta tu Estatus de Cuota y Fondo
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-purple-300 mb-1">Selecciona el Fondo:</label>
+                        <select id="selectGroupClient" onchange="onClientGroupChange()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-amber-400">
+                            <!-- Dinámico -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-purple-300 mb-1">Busca tu Nombre / Cédula:</label>
+                        <select id="selectMemberClient" onchange="renderClientCard()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-amber-400">
+                            <option value="">-- Selecciona tu nombre --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARJETA DE RESULTADO CLIENTE -->
+            <div id="clientCardResult" class="hidden bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-6">
+                <div id="semaforoBanner" class="p-4 rounded-2xl flex items-center justify-between border shadow-lg">
+                    <div class="flex items-center gap-3">
+                        <div id="semaforoDot" class="w-4 h-4 rounded-full animate-pulse"></div>
+                        <div>
+                            <p class="text-xs uppercase font-bold tracking-wider opacity-80">Estatus Actual</p>
+                            <p id="semaforoText" class="text-lg font-extrabold"></p>
+                        </div>
+                    </div>
+                    <span id="semaforoBadge" class="px-3 py-1 rounded-full text-xs font-bold uppercase"></span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center">
+                        <p class="text-xs text-purple-300 uppercase font-semibold">Cuota Correspondiente</p>
+                        <p id="clientMontoUSD" class="text-3xl font-black text-amber-400 mt-1">$0.00</p>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center">
+                        <p class="text-xs text-purple-300 uppercase font-semibold">Equivalente en Bolívares</p>
+                        <p id="clientMontoBS" class="text-3xl font-black text-emerald-400 mt-1">0.00 Bs</p>
+                    </div>
+                </div>
+
+                <div class="bg-purple-950/30 border border-purple-900/50 rounded-2xl p-5 space-y-4">
+                    <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-building-columns text-amber-400"></i> Datos para Pago Móvil (BNC / Banesco)
+                    </h3>
+                    <div class="text-sm space-y-1 text-slate-300">
+                        <p><strong>Banco:</strong> Banco Nacional de Crédito / Banesco</p>
+                        <p><strong>Teléfono:</strong> 0424-8104482</p>
+                        <p><strong>Cédula:</strong> V-XXXXXXXX</p>
+                    </div>
+
+                    <div class="pt-2">
+                        <label class="block text-xs font-semibold uppercase text-purple-300 mb-1">N° de Referencia del Pago Móvil (Obligatorio):</label>
+                        <input type="text" id="inputReferenciaPago" placeholder="Ej: 123456 o últimos dígitos" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-amber-400">
+                    </div>
+
+                    <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-300 flex items-start gap-2.5">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-400 text-base mt-0.5"></i>
+                        <span><strong>¡Atención!</strong> Al notificar por WhatsApp, <u>es obligatorio adjuntar el capture</u> de tu pago móvil en el chat para verificar la referencia introducida.</span>
+                    </div>
+
+                    <div class="pt-2 border-t border-purple-900/55 flex flex-col sm:flex-row gap-3">
+                        <button onclick="reportarPorWhatsApp()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/30">
+                            <i class="fa-brands fa-whatsapp text-lg"></i> Notificar Pago a Greisi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VISTA ADMIN ================= -->
+        <div id="adminView" class="hidden space-y-6">
+            <div class="bg-purple-900/20 border border-purple-700/50 rounded-3xl p-6 shadow-2xl">
+                <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-amber-400"></i> Panel de Administración Avanzado
+                    </h2>
+                    <button onclick="switchView('client')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs rounded-xl font-medium text-slate-300">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Volver a Cliente
+                    </button>
+                </div>
+
+                <!-- CONFIGURACIÓN GLOBAL (TASA Y PIN) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+                        <h3 class="text-sm font-bold text-amber-400 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-gear"></i> Tasa Base Global (Opcional)
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Tasa Base (Bs):</label>
+                                <input type="number" step="0.01" id="inputTasaBCV" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white text-sm" placeholder="Ej: 52.50">
+                            </div>
+                            <button onclick="guardarTasaSistema()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2 px-4 rounded-xl text-sm transition shadow-md">
+                                Actualizar Tasa Base
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+                        <h3 class="text-sm font-bold text-amber-400 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-key"></i> Cambiar PIN de Administrador
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Nuevo PIN (4 dígitos):</label>
+                                <input type="password" maxlength="4" id="inputNuevoPin" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white text-sm" placeholder="Ej: 2206">
+                            </div>
+                            <button onclick="guardarPinSistema()" class="w-full bg-purple-700 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-xl text-sm transition shadow-md">
+                                Guardar Nuevo PIN
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NUEVA SECCIÓN: CREAR FONDOS -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-6">
+                    <h3 class="text-sm font-bold text-amber-400 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-plus-circle"></i> Abrir Nuevo Fondo (Motos, Comida, Electrodomésticos, Zapatos)
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                        <input type="text" id="nuevoGrupoId" placeholder="ID sin espacios (ej: motos)" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white text-sm">
+                        <input type="text" id="nuevoGrupoNombre" placeholder="Nombre (ej: Fondo Motos)" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white text-sm">
+                        <input type="number" id="nuevoGrupoPozo" placeholder="Monto Total Fondo ($)" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white text-sm">
+                        <button onclick="crearNuevoGrupo()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition">
+                            <i class="fa-solid fa-folder-plus mr-1"></i> Crear Fondo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TABS DE FONDOS -->
+                <div id="adminGroupTabs" class="flex gap-2 overflow-x-auto pb-3 mb-4">
+                    <!-- Dinámico -->
+                </div>
+
+                <!-- CONFIGURACIÓN DE MONTOS, TASA Y ESTADÍSTICAS DEL FONDO -->
+                <div class="bg-slate-900 border border-purple-700/40 rounded-2xl p-4 mb-6 space-y-4">
+                    <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
+                        <i class="fa-solid fa-calculator"></i> Configuración del Fondo: <span id="nombreGrupoActualLabel" class="text-white underline">Fondo</span>
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Monto del Fondo ($):</label>
+                            <input type="number" id="inputPozoGrupo" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Cuota por Persona ($):</label>
+                            <input type="number" step="0.01" id="inputCuotaGrupo" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Tasa Directa (Bs) [0=Global]:</label>
+                            <input type="number" step="0.01" id="inputTasaGrupo" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white text-sm" placeholder="Ej: 65.00">
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-800">
+                        <button onclick="calcularCuotaConDiezPorciento()" class="bg-slate-800 hover:bg-slate-700 text-purple-300 font-bold py-2 px-3 rounded-xl text-xs transition border border-purple-900">
+                            Auto 10%
+                        </button>
+                        <button onclick="guardarMontosGrupo()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2 px-4 rounded-xl text-xs transition shadow-md">
+                            Guardar Configuración
+                        </button>
+                        <button onclick="abrirModalSorteo()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-xl text-xs transition shadow-md flex items-center gap-1.5">
+                            <i class="fa-solid fa-dice"></i> Ruleta de Sorteo
+                        </button>
+                        <button onclick="enviarRecordatorioMorosos()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-xl text-xs transition shadow-md flex items-center gap-1.5">
+                            <i class="fa-brands fa-whatsapp"></i> Recordar a Morosos
+                        </button>
+                    </div>
+
+                    <!-- PANEL FINANCIERO -->
+                    <div id="panelFinancieroFondo" class="bg-slate-950 p-4 rounded-xl border border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center mt-3">
+                        <div>
+                            <p class="text-[11px] text-slate-400 uppercase font-semibold">Participantes</p>
+                            <p id="statTotalParticipantes" class="text-lg font-bold text-white">0</p>
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-slate-400 uppercase font-semibold">Capital en Movimiento</p>
+                            <p id="statCapitalTotal" class="text-lg font-bold text-amber-400">$0.00</p>
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-slate-400 uppercase font-semibold">Tu Ganancia Estimada (10%)</p>
+                            <p id="statGananciaAdmin" class="text-lg font-bold text-emerald-400">$0.00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AGREGAR PARTICIPANTE -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-6">
+                    <h3 class="text-sm font-bold text-white mb-3">Agregar Participante al Fondo Actual</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
+                        <input type="text" id="nuevoNumero" placeholder="N° (Ej: 1)" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white text-sm">
+                        <input type="text" id="nuevoNombre" placeholder="Nombre y Apellido" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white text-sm">
+                        <input type="text" id="nuevaCedula" placeholder="Cédula (V-1234)" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white text-sm">
+                        <input type="text" id="nuevoTelefono" placeholder="Teléfono" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white text-sm">
+                        <button onclick="agregarParticipante()" class="bg-purple-700 hover:bg-purple-600 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition">
+                            <i class="fa-solid fa-user-plus mr-1"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TABLA DE PARTICIPANTES ADMIN -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-purple-300 text-xs uppercase">
+                                <th class="p-3">N°</th>
+                                <th class="p-3">Participante</th>
+                                <th class="p-3">Cédula</th>
+                                <th class="p-3">Estatus Pago</th>
+                                <th class="p-3">Fondo Entregado</th>
+                                <th class="p-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBody" class="text-sm divide-y divide-slate-800/60">
+                            <!-- Dinámico -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL RULETA GRÁFICA / SORTEO -->
+    <div id="modalSorteo" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-slate-900 border-2 border-purple-500 rounded-3xl p-6 max-w-md w-full shadow-2xl text-center space-y-4">
+            <div class="w-12 h-12 bg-purple-900/50 border border-purple-400 rounded-full flex items-center justify-center mx-auto text-amber-400 text-lg shadow-lg">
+                <i class="fa-solid fa-dice animate-spin"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white">Ruleta de Sorteo de Fondos</h3>
+            
+            <div>
+                <label class="block text-xs font-semibold uppercase text-purple-300 mb-1 text-left">Selecciona el Fondo a Sortear:</label>
+                <select id="selectSorteoGroup" onchange="cargarParticipantesParaSorteo()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-amber-400 text-sm">
+                    <!-- Dinámico -->
+                </select>
+            </div>
+
+            <!-- RULETA VISUAL CANVAS -->
+            <div class="relative w-full flex flex-col items-center justify-center py-2 bg-slate-950 rounded-2xl border border-slate-800">
+                <!-- Indicador / Flecha Superior -->
+                <div class="absolute top-2 z-20 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[16px] border-t-amber-400 filter drop-shadow-md"></div>
+                <canvas id="ruletaCanvas" width="260" height="260" class="rounded-full shadow-2xl border-4 border-amber-400/80 bg-slate-950 mt-3"></canvas>
+            </div>
+
+            <div class="flex gap-3 pt-1">
+                <button onclick="cerrarModalSorteo()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3 rounded-xl text-sm transition">Cerrar</button>
+                <button id="btnGirarRuleta" onclick="girarRuletaSorteo()" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold py-3 rounded-xl text-sm transition shadow-lg shadow-amber-500/20">
+                    <i class="fa-solid fa-play mr-1"></i> ¡Girar Ruleta!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PIN ADMIN -->
+    <div id="modalAdminPIN" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-slate-900 border border-purple-700/50 rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center space-y-4">
+            <div class="w-12 h-12 bg-purple-900/50 border border-purple-600 rounded-full flex items-center justify-center mx-auto text-amber-400">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white">Acceso de Administrador</h3>
+            <p class="text-xs text-slate-400">Introduce tu PIN de seguridad para gestionar el sistema.</p>
+            <input type="password" id="adminPinInput" maxlength="4" placeholder="••••" class="w-full text-center tracking-widest text-2xl bg-slate-950 border border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-amber-400">
+            <div class="flex gap-2">
+                <button onclick="closeAdminLogin()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2.5 rounded-xl text-sm">Cancelar</button>
+                <button onclick="verifyAdminPin()" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 rounded-xl text-sm">Entrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="text-center py-6 text-xs text-slate-500 border-t border-slate-900 mt-8">
+        Sistema de Gestión de Fondos • Desarrollado para Greisi Morón © 2026
+    </footer>
+
+    <!-- FIREBASE & LOGICA JAVASCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBMywPyor4uerHy9_7qfDl0X9Y5iAOf3g",
+            authDomain: "ahorro-gastrostudio.firebaseapp.com",
+            projectId: "ahorro-gastrostudio",
+            storageBucket: "ahorro-gastrostudio.firebasestorage.app",
+            messagingSenderId: "473222344725",
+            appId: "1:473222344725:web:36479dfe0fa027758b5e1c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.db = db;
+        window.currentAdminGroup = 'grupo1';
+        window.tasaData = { bcv: 52.50, adicional: 50 };
+        window.adminPinActual = "2206";
+        window.gruposConfig = {
+            grupo1: { nombre: "Grupo 1", pozo: 300, cuota: 33, tasaPersonalizada: 0 },
+            grupo2: { nombre: "Grupo 2", pozo: 300, cuota: 33, tasaPersonalizada: 0 },
+            san500: { nombre: "Fondo Principal", pozo: 500, cuota: 50, tasaPersonalizada: 0 }
+        };
+        window.participantesCache = [];
+        window.participantesSorteoCache = [];
+        let currentAngle = 0;
+        let isSpinning = false;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            cargarConfiguracionSistema();
+        });
+
+        window.switchView = function(view) {
+            if(view === 'client') {
+                document.getElementById('clientView').classList.remove('hidden');
+                document.getElementById('adminView').classList.add('hidden');
+                document.getElementById('btnViewClient').className = "flex-1 sm:flex-none px-5 py-2.5 rounded-xl font-medium text-sm bg-amber-500 text-slate-950 shadow-md";
+                document.getElementById('btnViewAdmin').className = "flex-1 sm:flex-none px-5 py-2.5 rounded-xl font-medium text-sm bg-purple-800 text-purple-200 border border-purple-600 hover:bg-purple-700";
+            } else {
+                document.getElementById('modalAdminPIN').classList.remove('hidden');
+            }
+        }
+
+        window.openAdminLogin = function() {
+            document.getElementById('modalAdminPIN').classList.remove('hidden');
+        }
+
+        window.closeAdminLogin = function() {
+            document.getElementById('modalAdminPIN').classList.add('hidden');
+            document.getElementById('adminPinInput').value = '';
+        }
+
+        window.verifyAdminPin = function() {
+            const pin = document.getElementById('adminPinInput').value;
+            if(pin === window.adminPinActual) { 
+                closeAdminLogin();
+                document.getElementById('clientView').classList.add('hidden');
+                document.getElementById('adminView').classList.remove('hidden');
+                document.getElementById('btnViewAdmin').className = "flex-1 sm:flex-none px-5 py-2.5 rounded-xl font-medium text-sm bg-amber-500 text-slate-950 shadow-md";
+                document.getElementById('btnViewClient').className = "flex-1 sm:flex-none px-5 py-2.5 rounded-xl font-medium text-sm bg-purple-800 text-purple-200 border border-purple-600 hover:bg-purple-700";
+                renderizarTabsAdmin();
+                actualizarCamposConfigGrupo();
+                cargarTablaAdmin();
+            } else {
+                alert('PIN Incorrecto');
+            }
+        }
+
+        async function cargarConfiguracionSistema() {
+            try {
+                const configDoc = await getDoc(doc(db, "config", "settings"));
+                if (configDoc.exists()) {
+                    const data = configDoc.data();
+                    if(data.bcv) window.tasaData.bcv = data.bcv;
+                    if(data.pin) window.adminPinActual = data.pin;
+                    if(data.gruposConfig) window.gruposConfig = data.gruposConfig;
+                } else {
+                    await setDoc(doc(db, "config", "settings"), { 
+                        bcv: 52.50, 
+                        pin: "2206",
+                        gruposConfig: window.gruposConfig 
+                    });
+                }
+                
+                window.tasaEfectiva = window.tasaData.bcv + window.tasaData.adicional;
+                if(document.getElementById('inputTasaBCV')) {
+                    document.getElementById('inputTasaBCV').value = window.tasaData.bcv;
+                }
+                poblarSelectCliente();
+            } catch (e) {
+                console.error("Error cargando configuración:", e);
+                window.tasaEfectiva = 102.50;
+                poblarSelectCliente();
+            }
+        }
+
+        window.poblarSelectCliente = function() {
+            const selectClient = document.getElementById('selectGroupClient');
+            const valorActual = selectClient.value;
+            selectClient.innerHTML = '';
+            
+            for (const [key, conf] of Object.entries(window.gruposConfig)) {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = conf.nombre || key;
+                selectClient.appendChild(opt);
+            }
+            if(valorActual && window.gruposConfig[valorActual]) {
+                selectClient.value = valorActual;
+            }
+            loadMembersForClient();
+            verificarBannerGanadorCliente();
+        }
+
+        window.onClientGroupChange = function() {
+            loadMembersForClient();
+            verificarBannerGanadorCliente();
+        }
+
+        async function verificarBannerGanadorCliente() {
+            const grupoKey = document.getElementById('selectGroupClient').value;
+            const banner = document.getElementById('clientWinnerBanner');
+            if(!grupoKey) {
+                banner.classList.add('hidden');
+                return;
+            }
+
+            try {
+                const conf = window.gruposConfig[grupoKey];
+                if(conf && conf.ganadorReciente) {
+                    const infoGanador = conf.ganadorReciente;
+                    const tiempoTranscurrido = Date.now() - infoGanador.timestamp;
+                    const cuatroDiasEnMs = 4 * 24 * 60 * 60 * 1000;
+
+                    if(tiempoTranscurrido < cuatroDiasEnMs) {
+                        document.getElementById('winnerBannerTitle').innerText = `GANADOR DEL FONDO "${conf.nombre}"`;
+                        document.getElementById('winnerBannerName').innerText = infoGanador.nombre;
+                        banner.classList.remove('hidden');
+                        return;
+                    }
+                }
+                banner.classList.add('hidden');
+            } catch(e) {
+                console.error("Error verificando ganador:", e);
+                banner.classList.add('hidden');
+            }
+        }
+
+        window.renderizarTabsAdmin = function() {
+            const container = document.getElementById('adminGroupTabs');
+            container.innerHTML = '';
+
+            for (const [key, conf] of Object.entries(window.gruposConfig)) {
+                const btn = document.createElement('button');
+                btn.onclick = () => selectAdminGroup(key);
+                btn.id = `tab_${key}`;
+                const activo = key === window.currentAdminGroup;
+                btn.className = `px-4 py-2 rounded-xl text-xs font-bold uppercase transition ${activo ? 'bg-purple-700 text-white' : 'bg-slate-900 text-slate-400 border border-slate-800'}`;
+                btn.textContent = conf.nombre || key;
+                container.appendChild(btn);
+            }
+        }
+
+        window.crearNuevoGrupo = async function() {
+            const idInput = document.getElementById('nuevoGrupoId').value.trim().toLowerCase().replace(/\s+/g, '');
+            const nombreInput = document.getElementById('nuevoGrupoNombre').value.trim();
+            const pozoInput = parseFloat(document.getElementById('nuevoGrupoPozo').value);
+
+            if(!idInput || !nombreInput || !pozoInput) {
+                alert('Por favor completa todos los campos para crear el nuevo fondo.');
+                return;
+            }
+
+            if(window.gruposConfig[idInput]) {
+                alert('Ya existe un fondo con ese identificador.');
+                return;
+            }
+
+            const cuotaCalc = Math.round(((pozoInput / 10) * 1.10) * 100) / 100;
+
+            window.gruposConfig[idInput] = {
+                nombre: nombreInput,
+                pozo: pozoInput,
+                cuota: cuotaCalc,
+                tasaPersonalizada: 0
+            };
+
+            try {
+                await setDoc(doc(db, "config", "settings"), { 
+                    bcv: window.tasaData.bcv, 
+                    pin: window.adminPinActual, 
+                    gruposConfig: window.gruposConfig 
+                }, { merge: true });
+
+                document.getElementById('nuevoGrupoId').value = '';
+                document.getElementById('nuevoGrupoNombre').value = '';
+                document.getElementById('nuevoGrupoPozo').value = '';
+
+                renderizarTabsAdmin();
+                poblarSelectCliente();
+                selectAdminGroup(idInput);
+                alert(`¡Fondo "${nombreInput}" creado con éxito!`);
+            } catch (e) {
+                console.error("Error creando fondo:", e);
+                alert('Error al guardar en Firebase');
+            }
+        }
+
+        window.guardarTasaSistema = async function() {
+            const bcvVal = parseFloat(document.getElementById('inputTasaBCV').value);
+            if(!bcvVal || bcvVal <= 0) {
+                alert('Introduce una tasa válida');
+                return;
+            }
+            try {
+                window.tasaData.bcv = bcvVal;
+                window.tasaEfectiva = bcvVal + 50;
+                await setDoc(doc(db, "config", "settings"), { 
+                    bcv: bcvVal, 
+                    pin: window.adminPinActual, 
+                    gruposConfig: window.gruposConfig 
+                }, { merge: true });
+
+                alert('¡Tasa base actualizada con éxito!');
+                renderClientCard();
+            } catch (e) {
+                console.error("Error guardando tasa:", e);
+                alert('Error al guardar en Firebase');
+            }
+        }
+
+        window.guardarPinSistema = async function() {
+            const nuevoPin = document.getElementById('inputNuevoPin').value.trim();
+            if(!nuevoPin || nuevoPin.length !== 4 || isNaN(nuevoPin)) {
+                alert('El PIN debe ser exactamente de 4 números.');
+                return;
+            }
+            try {
+                window.adminPinActual = nuevoPin;
+                await setDoc(doc(db, "config", "settings"), { 
+                    bcv: window.tasaData.bcv, 
+                    pin: nuevoPin, 
+                    gruposConfig: window.gruposConfig 
+                }, { merge: true });
+
+                alert('¡PIN de administrador actualizado con éxito!');
+                document.getElementById('inputNuevoPin').value = '';
+            } catch (e) {
+                console.error("Error guardando PIN:", e);
+                alert('Error al actualizar el PIN en Firebase');
+            }
+        }
+
+        window.selectAdminGroup = function(grupo) {
+            window.currentAdminGroup = grupo;
+            renderizarTabsAdmin();
+            const conf = window.gruposConfig[grupo] || { nombre: grupo, pozo: 300, cuota: 33, tasaPersonalizada: 0 };
+            document.getElementById('nombreGrupoActualLabel').innerText = conf.nombre;
+            actualizarCamposConfigGrupo();
+            cargarTablaAdmin();
+        }
+
+        window.actualizarCamposConfigGrupo = function() {
+            const conf = window.gruposConfig[window.currentAdminGroup] || { pozo: 300, cuota: 33, tasaPersonalizada: 0 };
+            document.getElementById('inputPozoGrupo').value = conf.pozo;
+            document.getElementById('inputCuotaGrupo').value = conf.cuota;
+            document.getElementById('inputTasaGrupo').value = conf.tasaPersonalizada || '';
+        }
+
+        window.calcularCuotaConDiezPorciento = function() {
+            const pozoVal = parseFloat(document.getElementById('inputPozoGrupo').value);
+            if(!pozoVal || pozoVal <= 0) {
+                alert('Introduce primero el monto total del fondo');
+                return;
+            }
+            const cuotaCalculada = Math.round(((pozoVal / 10) * 1.10) * 100) / 100;
+            document.getElementById('inputCuotaGrupo').value = cuotaCalculada;
+        }
+
+        window.guardarMontosGrupo = async function() {
+            const pozoVal = parseFloat(document.getElementById('inputPozoGrupo').value);
+            const cuotaVal = parseFloat(document.getElementById('inputCuotaGrupo').value);
+            const tasaPersVal = parseFloat(document.getElementById('inputTasaGrupo').value) || 0;
+
+            if(!pozoVal || !cuotaVal) {
+                alert('Por favor introduce valores válidos para el fondo y la cuota.');
+                return;
+            }
+
+            const nombreActual = window.gruposConfig[window.currentAdminGroup].nombre;
+            const ganadorAntiguo = window.gruposConfig[window.currentAdminGroup].ganadorReciente || null;
+
+            window.gruposConfig[window.currentAdminGroup] = { 
+                nombre: nombreActual, 
+                pozo: pozoVal, 
+                cuota: cuotaVal, 
+                tasaPersonalizada: tasaPersVal,
+                ganadorReciente: ganadorAntiguo
+            };
+
+            try {
+                await setDoc(doc(db, "config", "settings"), { 
+                    bcv: window.tasaData.bcv, 
+                    pin: window.adminPinActual, 
+                    gruposConfig: window.gruposConfig 
+                }, { merge: true });
+
+                alert('¡Configuración del fondo guardada con éxito!');
+                cargarTablaAdmin();
+                renderClientCard();
+            } catch (e) {
+                console.error("Error guardando montos:", e);
+                alert('Error al guardar en Firebase');
+            }
+        }
+
+        function obtenerTasaDelGrupo(grupoKey) {
+            const conf = window.gruposConfig[grupoKey];
+            if (conf && conf.tasaPersonalizada && conf.tasaPersonalizada > 0) {
+                return conf.tasaPersonalizada;
+            }
+            return window.tasaEfectiva || 102.50;
+        }
+
+        window.loadMembersForClient = async function() {
+            const grupo = document.getElementById('selectGroupClient').value;
+            const selectMember = document.getElementById('selectMemberClient');
+            selectMember.innerHTML = '<option value="">-- Selecciona tu nombre --</option>';
+            
+            if(!grupo) return;
+
+            try {
+                const querySnapshot = await getDocs(collection(db, grupo));
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const opt = document.createElement('option');
+                    opt.value = docSnap.id;
+                    const numeroStr = data.numero ? `[N° ${data.numero}] ` : '';
+                    opt.textContent = `${numeroStr}${data.nombre} (Cédula: ${data.cedula || 'N/A'})`;
+                    opt.dataset.nombre = data.nombre;
+                    opt.dataset.cedula = data.cedula || 'N/A';
+                    opt.dataset.numero = data.numero || 'S/N';
+                    opt.dataset.pagado = data.pagado ? "true" : "false";
+                    opt.dataset.entregado = data.entregado ? "true" : "false";
+                    selectMember.appendChild(opt);
+                });
+            } catch (e) {
+                console.error("Error al cargar miembros:", e);
+            }
+        }
+
+        window.renderClientCard = function() {
+            const selectMember = document.getElementById('selectMemberClient');
+            const cardResult = document.getElementById('clientCardResult');
+            const grupo = document.getElementById('selectGroupClient').value;
+            
+            if(!selectMember.value) {
+                cardResult.classList.add('hidden');
+                return;
+            }
+
+            cardResult.classList.remove('hidden');
+            const selectedOpt = selectMember.options[selectMember.selectedIndex];
+            const pagado = selectedOpt.dataset.pagado === "true";
+            const entregado = selectedOpt.dataset.entregado === "true";
+            
+            const confGrupo = window.gruposConfig[grupo] || { pozo: 300, cuota: 33, tasaPersonalizada: 0 };
+            const montoUSD = confGrupo.cuota;
+            const tasaEfectivaGrupo = obtenerTasaDelGrupo(grupo);
+            const montoBS = montoUSD * tasaEfectivaGrupo;
+
+            document.getElementById('clientMontoUSD').innerText = `$${montoUSD.toFixed(2)}`;
+            document.getElementById('clientMontoBS').innerText = `${montoBS.toLocaleString('es-VE', {minimumFractionDigits: 2})} Bs`;
+
+            const now = new Date();
+            const diaActual = now.getDate();
+            
+            const semaforoDot = document.getElementById('semaforoDot');
+            const semaforoText = document.getElementById('semaforoText');
+            const semaforoBadge = document.getElementById('semaforoBadge');
+            const semaforoBanner = document.getElementById('semaforoBanner');
+
+            if (entregado) {
+                semaforoDot.className = "w-4 h-4 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50";
+                semaforoText.innerText = "¡Fondo Entregado con Éxito!";
+                semaforoBadge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+                semaforoBadge.innerText = "ENTREGADO";
+                semaforoBanner.className = "p-4 rounded-2xl flex items-center justify-between border bg-emerald-950/40 border-emerald-700/50";
+            } else if(pagado) {
+                semaforoDot.className = "w-4 h-4 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50";
+                semaforoText.innerText = "¡Cuota Al Día / Pagada!";
+                semaforoBadge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                semaforoBadge.innerText = "VERDE";
+                semaforoBanner.className = "p-4 rounded-2xl flex items-center justify-between border bg-emerald-950/30 border-emerald-800/50";
+            } else {
+                let corteDia = diaActual >= 30 ? 30 : (diaActual >= 15 ? 15 : 30);
+                let diasPasados = diaActual - corteDia;
+                if(diasPasados < 0) diasPasados = 0;
+
+                if(diasPasados >= 1 && diasPasados <= 2) {
+                    semaforoDot.className = "w-4 h-4 rounded-full bg-amber-500 shadow-lg shadow-amber-500/50";
+                    semaforoText.innerText = "En Período de Gracia (1 a 2 días)";
+                    semaforoBadge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase bg-amber-500/20 text-amber-400 border border-amber-500/30";
+                    semaforoBadge.innerText = "AMARILLO";
+                    semaforoBanner.className = "p-4 rounded-2xl flex items-center justify-between border bg-amber-950/30 border-amber-800/50";
+                } else if(diasPasados > 2) {
+                    semaforoDot.className = "w-4 h-4 rounded-full bg-rose-500 shadow-lg shadow-rose-500/50 animate-bounce";
+                    semaforoText.innerText = "¡Pago Atrasado / Vencido (> 2 días)!";
+                    semaforoBadge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase bg-rose-500/20 text-rose-400 border border-rose-500/30";
+                    semaforoBadge.innerText = "ROJO";
+                    semaforoBanner.className = "p-4 rounded-2xl flex items-center justify-between border bg-rose-950/30 border-rose-800/50";
+                } else {
+                    semaforoDot.className = "w-4 h-4 rounded-full bg-emerald-500";
+                    semaforoText.innerText = "Cuota Activa / A Tiempo";
+                    semaforoBadge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                    semaforoBadge.innerText = "AL DÍA";
+                    semaforoBanner.className = "p-4 rounded-2xl flex items-center justify-between border bg-purple-950/30 border-purple-800/50";
+                }
+            }
+        }
+
+        window.reportarPorWhatsApp = function() {
+            const selectMember = document.getElementById('selectMemberClient');
+            const selectedOpt = selectMember.options[selectMember.selectedIndex];
+            const nombre = selectedOpt.dataset.nombre;
+            const cedula = selectedOpt.dataset.cedula;
+            const numero = selectedOpt.dataset.numero;
+            const referencia = document.getElementById('inputReferenciaPago').value.trim();
+
+            if(!referencia) {
+                alert('Por favor, introduce el número de referencia de tu pago móvil antes de notificar.');
+                document.getElementById('inputReferenciaPago').focus();
+                return;
+            }
+
+            alert("¡Importante! Recuerda adjuntar la captura (capture) de tu pago en el chat de WhatsApp que se abrirá a continuación.");
+
+            const grupoKey = document.getElementById('selectGroupClient').value;
+            const confGrupo = window.gruposConfig[grupoKey] || { nombre: grupoKey, pozo: 300, cuota: 33, tasaPersonalizada: 0 };
+            const montoUSD = confGrupo.cuota;
+            const tasaEfectivaGrupo = obtenerTasaDelGrupo(grupoKey);
+            const montoBS = montoUSD * tasaEfectivaGrupo;
+
+            const mensaje = `Hola Greisi, le hablo para reportar el pago de mi cuota de $${montoUSD} (${montoBS.toLocaleString('es-VE', {minimumFractionDigits: 2})} Bs) correspondientes al Fondo "${confGrupo.nombre}". Puesto N° ${numero}, Nombre: ${nombre}, Cédula: ${cedula}. N° de Referencia: ${referencia}. Adjunto comprobante.`;
+            const url = `https://wa.me/584248104482?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+
+        window.cargarTablaAdmin = async function() {
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-slate-400">Cargando participantes...</td></tr>';
+            
+            try {
+                const querySnapshot = await getDocs(collection(db, window.currentAdminGroup));
+                tbody.innerHTML = '';
+                window.participantesCache = [];
+
+                let totalPartes = 0;
+                let capitalMov = 0;
+
+                if(querySnapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-slate-400">No hay participantes registrados en este fondo.</td></tr>';
+                    actualizarPanelFinanciero(0, 0);
+                    return;
+                }
+
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const id = docSnap.id;
+                    window.participantesCache.push({ id, ...data });
+                    totalPartes++;
+
+                    const pagado = data.pagado;
+                    const entregado = data.entregado;
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-900/50";
+                    tr.innerHTML = `
+                        <td class="p-3 font-bold text-amber-400">${data.numero || 'N/A'}</td>
+                        <td class="p-3 font-medium text-white">${data.nombre}</td>
+                        <td class="p-3 text-slate-300 font-mono">${data.cedula || 'N/A'}</td>
+                        <td class="p-3">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${pagado ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'}">
+                                ${pagado ? '🟢 Pagado' : '🔴 Pendiente'}
+                            </span>
+                        </td>
+                        <td class="p-3">
+                            <button onclick="marcarEntregado('${id}', '${data.nombre || ''}', '${data.telefono || ''}', ${!entregado})" class="px-3 py-1.5 rounded-xl text-xs font-bold transition ${entregado ? 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-lg shadow-emerald-900/30' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}">
+                                ${entregado ? '✅ Entregado' : 'Marcar Entregado'}
+                            </button>
+                        </td>
+                        <td class="p-3 text-center flex items-center justify-center gap-2">
+                            <button onclick="togglePago('${id}', ${!pagado})" class="px-3 py-1.5 rounded-xl text-xs font-bold transition ${pagado ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-emerald-600 text-white hover:bg-emerald-500'}">
+                                ${pagado ? 'Pendiente' : 'Aprobar'}
+                            </button>
+                            <button onclick="editarParticipante('${id}', '${data.numero || ''}', '${data.nombre || ''}', '${data.cedula || ''}', '${data.telefono || ''}')" class="p-1.5 bg-amber-950/50 text-amber-400 rounded-xl hover:bg-amber-900/50 transition" title="Editar">
+                                <i class="fa-solid fa-pen text-xs"></i>
+                            </button>
+                            <button onclick="eliminarParticipante('${id}')" class="p-1.5 bg-rose-950/50 text-rose-400 rounded-xl hover:bg-rose-900/50 transition" title="Eliminar">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                const confGrupo = window.gruposConfig[window.currentAdminGroup] || { pozo: 300, cuota: 33 };
+                capitalMov = totalPartes * confGrupo.cuota;
+                actualizarPanelFinanciero(totalPartes, capitalMov);
+
+            } catch (e) {
+                console.error("Error cargando admin:", e);
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-rose-400">Error al cargar datos de Firebase.</td></tr>';
+            }
+        }
+
+        function actualizarPanelFinanciero(totalParticipantes, capitalTotal) {
+            const confGrupo = window.gruposConfig[window.currentAdminGroup] || { pozo: 300 };
+            document.getElementById('statTotalParticipantes').innerText = totalParticipantes;
+            document.getElementById('statCapitalTotal').innerText = `$${capitalTotal.toFixed(2)}`;
+            const gananciaEstimada = confGrupo.pozo * 0.10;
+            document.getElementById('statGananciaAdmin').innerText = `$${gananciaEstimada.toFixed(2)}`;
+        }
+
+        // ================= LÓGICA DE RULETA GRÁFICA CANVAS =================
+        window.abrirModalSorteo = function() {
+            const selectSorteo = document.getElementById('selectSorteoGroup');
+            selectSorteo.innerHTML = '';
+            for (const [key, conf] of Object.entries(window.gruposConfig)) {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = conf.nombre || key;
+                if(key === window.currentAdminGroup) opt.selected = true;
+                selectSorteo.appendChild(opt);
+            }
+            document.getElementById('modalSorteo').classList.remove('hidden');
+            cargarParticipantesParaSorteo();
+        }
+
+        window.cerrarModalSorteo = function() {
+            document.getElementById('modalSorteo').classList.add('hidden');
+        }
+
+        window.cargarParticipantesParaSorteo = async function() {
+            const grupoKey = document.getElementById('selectSorteoGroup').value;
+            window.participantesSorteoCache = [];
+            try {
+                const querySnapshot = await getDocs(collection(db, grupoKey));
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    // Excluir a los que ya se les entregó
+                    if (!data.entregado) {
+                        window.participantesSorteoCache.push(data);
+                    }
+                });
+                drawWheel();
+            } catch(e) {
+                console.error("Error cargando participantes para sorteo:", e);
+            }
+        }
+
+        function drawWheel() {
+            const canvas = document.getElementById('ruletaCanvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const participants = window.participantesSorteoCache;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const center = canvas.width / 2;
+            const radius = center - 8;
+            
+            if(!participants || participants.length === 0) {
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = '13px Poppins, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Sin participantes pendientes', center, center);
+                return;
+            }
+            
+            const arcSize = (2 * Math.PI) / participants.length;
+            const colors = ['#7e22ce', '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', '#eab308'];
+            
+            ctx.save();
+            ctx.translate(center, center);
+            ctx.rotate(currentAngle);
+            
+            for (let i = 0; i < participants.length; i++) {
+                const angle = i * arcSize;
+                ctx.beginPath();
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.moveTo(0, 0);
+                ctx.arc(0, 0, radius, angle, angle + arcSize, false);
+                ctx.lineTo(0, 0);
+                ctx.fill();
+                ctx.strokeStyle = '#020617';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Texto en la sección
+                ctx.save();
+                ctx.rotate(angle + arcSize / 2);
+                ctx.textAlign = 'right';
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 11px Poppins, sans-serif';
+                const part = participants[participants.length - 1 - i];
+                const text = (part.numero ? `N°${part.numero} ` : '') + part.nombre;
+                ctx.fillText(text.substring(0, 16), radius - 15, 4);
+                ctx.restore();
+            }
+            ctx.restore();
+            
+            // Centro de la ruleta
+            ctx.beginPath();
+            ctx.arc(center, center, 20, 0, 2 * Math.PI);
+            ctx.fillStyle = '#0f172a';
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#fbbf24';
+            ctx.stroke();
+        }
+
+        window.girarRuletaSorteo = function() {
+            if(!window.participantesSorteoCache || window.participantesSorteoCache.length === 0) {
+                alert('¡Todos los participantes de este fondo ya recibieron su entrega o no hay disponibles!');
+                return;
+            }
+
+            if(isSpinning) return;
+            isSpinning = true;
+            const btnGirar = document.getElementById('btnGirarRuleta');
+            btnGirar.disabled = true;
+
+            const participants = window.participantesSorteoCache;
+            const winningIndex = Math.floor(Math.random() * participants.length);
+            const arcSize = (2 * Math.PI) / participants.length;
+            
+            const winningAngle = 2 * Math.PI - (winningIndex * arcSize + arcSize / 2);
+            const extraSpins = 6 * 2 * Math.PI; // 6 vueltas completas
+            const targetAngle = currentAngle + extraSpins + (winningAngle - (currentAngle % (2 * Math.PI)));
+
+            let startTime = null;
+            const duration = 4000; // 4 segundos
+
+            function animateSpin(timestamp) {
+                if(!startTime) startTime = timestamp;
+                const elapsed = timestamp - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                currentAngle = currentAngle + (targetAngle - currentAngle) * easeOut;
+                drawWheel();
+
+                if(progress < 1) {
+                    requestAnimationFrame(animateSpin);
+                } else {
+                    isSpinning = false;
+                    btnGirar.disabled = false;
+                    const ganadorFinal = participants[winningIndex];
+                    
+                    finalizarSorteoGanador(ganadorFinal);
+                }
+            }
+
+            requestAnimationFrame(animateSpin);
+        }
+
+        async function finalizarSorteoGanador(ganadorFinal) {
+            const grupoKey = document.getElementById('selectSorteoGroup').value;
+            const conf = window.gruposConfig[grupoKey];
+
+            alert(`🎉 ¡FELICIDADES AL GANADOR!\n\n🏆 ${ganadorFinal.nombre} (Puesto N° ${ganadorFinal.numero || 'S/N'})\n\nHa ganado el sorteo del Fondo "${conf.nombre}". La notificación morada ya está activa para los participantes por 4 días.`);
+
+            try {
+                if(!window.gruposConfig[grupoKey].ganadorReciente) {
+                    window.gruposConfig[grupoKey].ganadorReciente = {};
+                }
+                window.gruposConfig[grupoKey].ganadorReciente = {
+                    nombre: ganadorFinal.nombre,
+                    timestamp: Date.now()
+                };
+
+                await setDoc(doc(db, "config", "settings"), { 
+                    bcv: window.tasaData.bcv, 
+                    pin: window.adminPinActual, 
+                    gruposConfig: window.gruposConfig 
+                }, { merge: true });
+            } catch(err) {
+                console.error("Error guardando ganador:", err);
+            }
+        }
+
+        window.enviarRecordatorioMorosos = function() {
+            if(!window.participantesCache || window.participantesCache.length === 0) {
+                alert('No hay participantes registrados.');
+                return;
+            }
+            const morosos = window.participantesCache.filter(p => !p.pagado);
+            if(morosos.length === 0) {
+                alert('¡Excelente noticia! Todos los participantes de este fondo están al día (Pagados). 🟢');
+                return;
+            }
+
+            const confGrupo = window.gruposConfig[window.currentAdminGroup];
+            let enviados = 0;
+
+            morosos.forEach(m => {
+                if(m.telefono) {
+                    const telLimpio = m.telefono.replace(/\D/g, '');
+                    const mensaje = `Hola ${m.nombre}, te escribo de parte de Greisi Morón para recordarte amablemente que tienes pendiente el pago de tu cuota del Fondo "${confGrupo.nombre}". Por favor realiza tu pago móvil y envía tu comprobante. ¡Gracias!`;
+                    const url = `https://wa.me/${telLimpio.startsWith('58') ? telLimpio : '58' + telLimpio}?text=${encodeURIComponent(mensaje)}`;
+                    window.open(url, '_blank');
+                    enviados++;
+                }
+            });
+
+            alert(`Se han abierto ${enviados} chats de WhatsApp con los recordatorios para los participantes pendientes.`);
+        }
+
+        window.agregarParticipante = async function() {
+            const numero = document.getElementById('nuevoNumero').value.trim();
+            const nombre = document.getElementById('nuevoNombre').value.trim();
+            const cedula = document.getElementById('nuevaCedula').value.trim();
+            const telefono = document.getElementById('nuevoTelefono').value.trim();
+
+            if(!nombre || !cedula) {
+                alert('Introduce al menos el nombre y la cédula del participante');
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, window.currentAdminGroup), {
+                    numero: numero || '1',
+                    nombre: nombre,
+                    cedula: cedula,
+                    telefono: telefono,
+                    pagado: false,
+                    entregado: false
+                });
+                document.getElementById('nuevoNumero').value = '';
+                document.getElementById('nuevoNombre').value = '';
+                document.getElementById('nuevaCedula').value = '';
+                document.getElementById('nuevoTelefono').value = '';
+                cargarTablaAdmin();
+                loadMembersForClient();
+                alert('¡Participante agregado con éxito!');
+            } catch (e) {
+                console.error("Error al agregar:", e);
+                alert('Error al guardar en Firebase');
+            }
+        }
+
+        window.editarParticipante = async function(id, numActual, nomActual, cedActual, telActual) {
+            const nuevoNum = prompt("Editar Número / Puesto Asignado:", numActual);
+            if (nuevoNum === null) return;
+            const nuevoNom = prompt("Editar Nombre y Apellido:", nomActual);
+            if (nuevoNom === null) return;
+            const nuevaCed = prompt("Editar Cédula:", cedActual);
+            if (nuevaCed === null) return;
+            const nuevoTel = prompt("Editar Teléfono:", telActual);
+            if (nuevoTel === null) return;
+
+            try {
+                const docRef = doc(db, window.currentAdminGroup, id);
+                await updateDoc(docRef, {
+                    numero: nuevoNum,
+                    nombre: nuevoNom,
+                    cedula: nuevaCed,
+                    telefono: nuevoTel
+                });
+                cargarTablaAdmin();
+                loadMembersForClient();
+                alert('¡Participante actualizado con éxito!');
+            } catch (e) {
+                console.error("Error al actualizar:", e);
+                alert('Error al actualizar en Firebase');
+            }
+        }
+
+        window.marcarEntregado = async function(id, nombreParticipante, telefonoParticipante, nuevoEstado) {
+            try {
+                const docRef = doc(db, window.currentAdminGroup, id);
+                await updateDoc(docRef, { entregado: nuevoEstado });
+                cargarTablaAdmin();
+                loadMembersForClient();
+
+                if (nuevoEstado) {
+                    const confGrupo = window.gruposConfig[window.currentAdminGroup] || { nombre: window.currentAdminGroup, pozo: 300, cuota: 33, tasaPersonalizada: 0 };
+                    const pozoUSD = confGrupo.pozo;
+                    const tasaEfectivaGrupo = obtenerTasaDelGrupo(window.currentAdminGroup);
+                    const pozoBS = pozoUSD * tasaEfectivaGrupo;
+
+                    const mensaje = `¡Hola ${nombreParticipante}! Te informamos que tu fondo "${confGrupo.nombre}" por un monto de $${pozoUSD}.00 (${pozoBS.toLocaleString('es-VE', {minimumFractionDigits: 2})} Bs) ha sido ENTREGADO exitosamente. ¡Muchas felicidades! 🚀💰`;
+                    
+                    if (telefonoParticipante) {
+                        const telLimpio = telefonoParticipante.replace(/\D/g, '');
+                        const url = `https://wa.me/${telLimpio.startsWith('58') ? telLimpio : '58' + telLimpio}?text=${encodeURIComponent(mensaje)}`;
+                        window.open(url, '_blank');
+                    } else {
+                        alert(`Fondo marcado como ENTREGADO, pero el participante no tiene teléfono registrado. Mensaje:\n\n${mensaje}`);
+                    }
+                }
+            } catch (e) {
+                console.error("Error actualizando entrega:", e);
+                alert('Error al actualizar el estatus de entrega');
+            }
+        }
+
+        window.togglePago = async function(id, nuevoEstado) {
+            try {
+                const docRef = doc(db, window.currentAdminGroup, id);
+                await updateDoc(docRef, { pagado: nuevoEstado });
+                cargarTablaAdmin();
+                loadMembersForClient();
+            } catch (e) {
+                console.error("Error actualizando pago:", e);
+                alert('Error al actualizar estatus');
+            }
+        }
+
+        window.eliminarParticipante = async function(id) {
+            if(confirm('¿Estás segura de eliminar a este participante?')) {
+                try {
+                    await deleteDoc(doc(db, window.currentAdminGroup, id));
+                    cargarTablaAdmin();
+                    loadMembersForClient();
+                } catch (e) {
+                    console.error("Error eliminando:", e);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
